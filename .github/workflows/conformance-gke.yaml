@@ -327,7 +327,7 @@ jobs:
 
       - name: Upload artifacts
         if: ${{ !success() }}
-        uses: actions/upload-artifact@da838ae9595ac94171fa2d4de5a2f117b3e7ac32
+        uses: actions/upload-artifact@3cea5372237819ed00197afe530f5a7ea3e805c8
         with:
           name: cilium-sysdump-out.zip
           path: cilium-sysdump-out.zip
