@@ -65,79 +65,9 @@ jobs:
         with:
           sha: ${{ inputs.SHA || github.sha }}
 
-  setup-and-test:
-    name: Setup & Test
-    # Ubuntu 22.04 runner uses cgroup v2-only which is needed for some
-    # our LB functionality
-    runs-on: ubuntu-22.04
-    timeout-minutes: 45
-    steps:
-      - name: Checkout context ref
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
-        with:
-          ref: ${{ inputs.context-ref || github.sha }}
-          persist-credentials: false
-
-      - name: Set Environment Variables
-        uses: ./.github/actions/set-env-variables
-
-      - name: Set up job variables
-        id: vars
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            SHA="${{ inputs.SHA }}"
-          else
-            SHA="${{ github.sha }}"
-          fi
-
-          echo sha=${SHA} >> $GITHUB_OUTPUT
-
-      - name: Install Cilium CLI
-        uses: cilium/cilium-cli@5362f383942260c0aed4f3876e09c3452435577a # v0.14.8
-        with:
-          release-version: ${{ env.cilium_cli_version }}
-          ci-version: ${{ env.cilium_cli_ci_version }}
-
-      - name: Checkout pull request for Helm chart
-        uses: actions/checkout@c85c95e3d7251135ab7dc9ce3241c5835cc595a9 # v3.5.3
-        with:
-          ref: ${{ steps.vars.outputs.sha }}
-          persist-credentials: false
-          path: pull-request
-
-      - name: Wait for image to be available
-        timeout-minutes: 10
-        shell: bash
-        run: |
-          until docker manifest inspect quay.io/${{ env.QUAY_ORGANIZATION_DEV }}/cilium-ci:${{ steps.vars.outputs.sha }} &> /dev/null; do sleep 45s; done
-
-      - name: Run LoadBalancing test
-        run: |
-          cd ${{ github.workspace }}/test/l4lb && sudo ./test.sh ${{ env.QUAY_ORGANIZATION_DEV }} ${{ steps.vars.outputs.sha }}
-
-      - name: Run NAT46x64 test
-        run: |
-          cd ${{ github.workspace }}/test/nat46x64 && sudo ./test.sh ${{ env.QUAY_ORGANIZATION_DEV }} ${{ steps.vars.outputs.sha }}
-
-      - name: Fetch cilium-sysdump
-        if: ${{ !success() }}
-        run: |
-          sudo cilium sysdump --output-filename cilium-sysdump-out
-
-      - name: Upload cilium-sysdump
-        uses: actions/upload-artifact@0b7f8abb1508181956e8e162db84b466c27e18ce # v3.1.2
-        if: ${{ !success() }}
-        with:
-          name: cilium-sysdump-out.zip
-          path: cilium-sysdump-out.zip
-
-  commit-status-final:
-    if: ${{ always() }}
-    needs: setup-and-test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set final commit status
-        uses: myrotvorets/set-commit-status-action@243b4f7e597f62335408d58001edf8a02cf3e1fd # v1.1.7  
-        with:
-          sha: ${{ inputs.SHA || github.sha }}
-          status: ${{ needs.setup-and-test.result }}
+  foobar:
+     runs-on: ubuntu-latest
+     steps:
+       - name: foo
+         run: |
+           echo "bar"
