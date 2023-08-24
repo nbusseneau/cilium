@@ -9,7 +9,7 @@ on:
       - reopened
   push:
     branches:
-      - main
+      # - main
       - ft/main/**
 
 permissions: read-all

@@ -20,7 +20,7 @@ on:
 
   push:
     branches:
-      - main
+      # - main
       - ft/main/**
     paths-ignore:
       - 'Documentation/**'

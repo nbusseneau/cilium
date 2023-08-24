@@ -7,7 +7,7 @@ on:
       - ft/main/**
   push:
     branches:
-      - main
+      # - main
       - ft/main/**
   schedule:
     - cron: "45 6 * * 3"
